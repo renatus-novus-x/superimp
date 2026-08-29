@@ -54,7 +54,7 @@ test.
 
 The test uses IOCS CRT mode 13: 15 kHz, 512 x 512, 65536 colors, with graphics
 page 1 visible. It changes only the documented mode controls needed by the
-test. Raw CRTC timing registers are never restored from sampled values.
+test.
 
 At exit, the saved IOCS CRT mode and video-controller register are restored.
 Because IOCS does not provide a query for the current TVCTRL selection, the
