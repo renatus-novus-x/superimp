@@ -3,6 +3,10 @@
 [English](README.md) | [日本語](README.ja.md)
 
 <p align="center">
+  <img src="images/teaser.png" alt="superimp running on the Sharp X68000" width="768" height="512">
+</p>
+
+<p align="center">
   <strong><a href="https://uraraworks.github.io/WebX68k/?cpu=10&ram=12&fd1=https://raw.githubusercontent.com/renatus-novus-x/superimp/main/dist/superimp.zip&run=1">Launch superimp in WebX68k</a></strong>
 </p>
 
@@ -11,16 +15,15 @@ external video, and superimpose display modes on a Sharp X68000.
 
 The program uses X68000 IOCS calls and video-controller settings corresponding
 to the X-BASIC IMAGE.FNC operations crt(0) through crt(3), V_cut(0), and
-Vpage(1). It does not depend on a specific superimpose adapter model.
+Vpage(1).
 
 ## Requirements
 
 For the complete test on real hardware:
 
 - A Sharp X68000 running Human68k
-- Hardware capable of feeding external composite video into the X68000 video path
+- A genuine X68000 monitor or CZ-6TU for feeding external composite video into the X68000 video path
 - A synchronized external composite video source
-- A display or converter that accepts the resulting X68000 RGB signal
 
 The WebX68k disk is provided for easy startup and inspection of the program.
 External composite-video input and physical superimpose hardware are not
@@ -51,8 +54,7 @@ test.
 
 The test uses IOCS CRT mode 13: 15 kHz, 512 x 512, 65536 colors, with graphics
 page 1 visible. It changes only the documented mode controls needed by the
-test. Raw CRTC timing registers are never restored from sampled values, and the
-video-controller EXON bit is not modified.
+test. Raw CRTC timing registers are never restored from sampled values.
 
 At exit, the saved IOCS CRT mode and video-controller register are restored.
 Because IOCS does not provide a query for the current TVCTRL selection, the
