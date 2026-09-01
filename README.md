@@ -36,7 +36,7 @@ For the complete test on real hardware:
 
 - A Sharp X68000 running Human68k
 - A genuine X68000 monitor or CZ-6TU for feeding external composite video into the X68000 video path
-- A synchronized external composite video source
+- An external composite video source
 
 The WebX68k disk is provided for easy startup and inspection of the program.
 External composite-video input and physical superimpose hardware are not
@@ -69,7 +69,6 @@ test.
 
 The test keeps IOCS CRT mode 13 active throughout its instruction and test
 stages: 15 kHz, 512 x 512, 65536 colors, with graphics page 1 normally visible.
-This prevents instructions from being displayed in a narrow 256 x 256 mode.
 It changes only the documented mode controls needed by the test.
 
 At exit, the saved IOCS CRT mode is restored. Only the saved high byte at
