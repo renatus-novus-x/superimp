@@ -13,9 +13,22 @@
 An interactive Human68k diagnostic and test pattern for validating computer,
 external video, and superimpose display modes on a Sharp X68000.
 
-The program uses X68000 IOCS calls and video-controller settings corresponding
-to the X-BASIC IMAGE.FNC operations crt(0) through crt(3), V_cut(0), and
-Vpage(1).
+The program uses the following control mappings compatible with Human68k 3.02
+`BASIC2/IMAGE.FNC`:
+
+| IMAGE.FNC operation | Control mapping |
+| --- | --- |
+| `crt(0)` | IOCS `_TVCTRL(0x1C)`: VIDEO selection |
+| `crt(1)` | IOCS `_TVCTRL(0x1D)`: COMPUTER selection |
+| `crt(2)` | IOCS `_TVCTRL(0x1E)`: SUPERIMPOSE, contrast down |
+| `crt(3)` | IOCS `_TVCTRL(0x1F)`: SUPERIMPOSE, standard contrast |
+| `V_cut(0/1)` | Clear/set bit 7 of the VICON R2 high byte at `$E82600` (16-bit R2 bit 15, YS) |
+
+`crt()`, `V_cut()`, and `Vpage()` are independent controls. `crt()` sends an
+external TV/monitor-control command, `V_cut()` controls external-video cut via
+VICON YS, and `Vpage()` controls graphics-page visibility. In particular,
+`crt(0)` is a TVCTRL VIDEO selection, not the same operation as producing a
+video-only result with `V_cut(0)` and `Vpage(0)`.
 
 ## Requirements
 
@@ -35,30 +48,34 @@ Run:
 
     superimp.x
 
-The program first displays the current video state without changing it. Press
-any key to proceed, or press Escape to stop.
+The program first saves the original display state, then enters IOCS CRT mode
+13 so that all instructions are shown at 15 kHz, 512 x 512. Press any key to
+proceed, or press Escape to stop. The original CRT mode is restored at exit.
 
 | Stage | Mode | Expected result |
 | --- | --- | --- |
-| 1 | Computer | X68000 white graphics test pattern |
-| 2 | Contrast-down superimpose, equivalent to crt(2) | External video and computer layer comparison |
-| 3 | Standard superimpose, equivalent to crt(3) | External video combined with the X68000 pattern |
-| 4 | Video only, equivalent to crt(0) | External composite video only |
-| 5 | Computer only, equivalent to crt(1) | X68000 graphics only |
-| 6 | Standard superimpose again | Recheck the combined result |
+| 1 | TVCTRL COMPUTER, `crt(1)` | X68000 graphics visible |
+| 2 | SUPERIMPOSE contrast down, `crt(2)` | External video and computer graphics, contrast-down variant |
+| 3 | SUPERIMPOSE standard, `crt(3)` | External video and computer graphics, standard contrast |
+| 4 | VICON VIDEO CUT, `V_cut(1)` | External video disappears; computer graphics remain |
+| 5 | GRAPHICS PAGE OFF, `Vpage(0)` with `V_cut(0)` | Graphics page disappears; external video remains |
+| 6 | SUPERIMPOSE restore | External video and computer graphics return |
+| 7 | TVCTRL COMPUTER, `crt(1)` | Safe computer state before exit |
 
 Before each switch, the exact CRTMOD, TVCTRL, graphics-page, and video-cut
 settings are displayed. Video and superimpose stages return to computer mode
 after up to eight seconds. Any key returns early; Escape returns and stops the
 test.
 
-The test uses IOCS CRT mode 13: 15 kHz, 512 x 512, 65536 colors, with graphics
-page 1 visible. It changes only the documented mode controls needed by the
-test.
+The test keeps IOCS CRT mode 13 active throughout its instruction and test
+stages: 15 kHz, 512 x 512, 65536 colors, with graphics page 1 normally visible.
+This prevents instructions from being displayed in a narrow 256 x 256 mode.
+It changes only the documented mode controls needed by the test.
 
-At exit, the saved IOCS CRT mode and video-controller register are restored.
-Because IOCS does not provide a query for the current TVCTRL selection, the
-program uses computer mode as the safe final TV-control state.
+At exit, the saved IOCS CRT mode is restored. Only the saved high byte at
+`$E82600`, which is the byte modified by `V_cut()`, is written back; the full
+VICON R2 word is not restored. TVCTRL state cannot be queried, so the tool
+restores TV control to COMPUTER (`0x1D`) as a safe fallback.
 
 ## Build
 
